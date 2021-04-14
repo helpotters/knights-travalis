@@ -32,8 +32,8 @@ class Knight
   def move_piece(from_node)
     # Build a tree of possible moves
     MOVES.each do |move|
-      # BUG: Dimension mismatch
-      move_data = Matrix[from_node.data.transposeknights_travalis / lib / knight.rb] + Matrix[move]
+      puts "Node data #{from_node.data}"
+      move_data = Matrix[from_node.data.flatten] + Matrix[move]
       if valid_move?(move_data) # must be on the chess board
         new_node = GraphNode.new(move_data.to_a)
         from_node.add_edge(new_node)
@@ -59,7 +59,7 @@ class Knight
     end
   end
 
-  def depth_search_for_move?(node, correct, moves = 0)
+  def depth_search_for_move?(node, correct)
     # TODO: Search a tree for a correct move, if existing
     return false if node.nil?
     return true if node.data == correct
@@ -68,7 +68,7 @@ class Knight
     puts 'search'
     node.neighbors.each do |neighbor|
       puts 'depth'
-      depth_search_for_move?(neighbor, correct, moves += 1)
+      depth_search_for_move?(neighbor, correct)
     end
   end
 
