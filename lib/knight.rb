@@ -17,7 +17,8 @@ class Knight
   end
 
   def knights_move(to, from)
-    @graph << GraphNode.new(from) if @graph.empty?
+    @graph << GraphNode.new(from) if @graph.empty? # Make the first node
+
     @graph.each do |node|
       move_piece(node) unless @history.include?(node)
       node.neighbors.each { |node| move_piece(node) } if @history.include?(node)
@@ -29,51 +30,44 @@ class Knight
 
   private
 
+  # Build a tree of possible moves
   def move_piece(from_node)
-    # Build a tree of possible moves
     MOVES.each do |move|
-      puts "Node data #{from_node.data}"
-      move_data = Matrix[from_node.data.flatten] + Matrix[move]
-      if valid_move?(move_data) # must be on the chess board
-        new_node = GraphNode.new(move_data.to_a)
-        from_node.add_edge(new_node)
-      else
-        next
-      end
+      new_move = Matrix[from_node.data.flatten] + Matrix[move]
+
+      next unless @board.valid_move?(new_move)
+
+      new_node = GraphNode.new(new_move.to_a)
+      from_node.add_edge(new_node)
+      new_node.add_parent(from_node)
     end
   end
 
-  def valid_move?(_move)
-    true
-  end
-
+  # Run knights move if false, find parents if true
   def correct_move?(to, from)
-    # TODO: Run knights move if false, find parents if true
-    correct = depth_search_for_move?(@graph[0], to)
-    if correct == true
-      puts 'parents'
-      print_parents
-    else
-      puts 'knight'
+    last_move = last_move_found(@graph[0], to)
+
+    if last_move == false
       knights_move(to, from)
+    else
+      print_parents(last_move)
     end
   end
 
-  def depth_search_for_move?(node, correct)
-    # TODO: Search a tree for a correct move, if existing
+  # Search a tree for a correct move, if existing
+  def last_move_found(node, move, queue = [])
     return false if node.nil?
-    return true if node.data == correct
     return false if node.neighbors.empty?
+    return node.flatten[0] if node.data == move
 
-    puts 'search'
     node.neighbors.each do |neighbor|
-      puts 'depth'
-      depth_search_for_move?(neighbor, correct)
+      queue << neighbor
+      last_move_found(queue.shift, move, queue)
     end
   end
 
-  def print_parents
-    # TODO: If correct, retrieve all parents of the correct position
-    p 'True'
+  # TODO: If correct, retrieve all parents of the correct position
+  def print_parents(_node)
+    node.each { |help| puts help.parent.data }
   end
 end
