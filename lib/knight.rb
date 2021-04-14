@@ -1,52 +1,79 @@
 # lib/knight.rb
-require_relative('./node')
+require_relative('node')
+require_relative('board')
 require 'matrix'
 
 # Behaves as the Knight piece in a game of chess
 class Knight
-  attr_accessor :root
-
   MOVES = [[1, 2], [2, 1], [-1, -2], [-2, -1], [1, -2], [-1, 2], [2, -1], [-2, 1]].freeze
+
+  attr_accessor :graph
+  attr_reader :board
+
   def initialize
-    @root = Node.new
+    @board = Board.new
+    @graph = []
+    @history = []
   end
 
-  # return how many moves it takes to get
-  def knights_move(to, from, node = root)
-    print_moves if is_there_a_match?(to)
+  def knights_move(to, from)
+    @graph << GraphNode.new(from) if @graph.empty?
+    @graph.each do |node|
+      move_piece(node) unless @history.include?(node)
+      node.neighbors.each { |node| move_piece(node) } if @history.include?(node)
+      @history << node
+    end
 
-    node.data = from
-    print node.data
-
-    move_piece
+    correct_move?(to, from)
   end
 
   private
 
-  # matrix addition to create every possible move at the current position
-  def move_piece(node = root)
-    MOVES.each_with_index do |_move, i|
-      new_move = Matrix[node.data] + Matrix[MOVES[i]] # Movement by adding the matrices
-      new_node = Node.new
-      new_node.data = new_move.to_a
-      node.add(new_node, i)
-      new_node.data
+  def move_piece(from_node)
+    # Build a tree of possible moves
+    MOVES.each do |move|
+      # BUG: Dimension mismatch
+      move_data = Matrix[from_node.data.transposeknights_travalis / lib / knight.rb] + Matrix[move]
+      if valid_move?(move_data) # must be on the chess board
+        new_node = GraphNode.new(move_data.to_a)
+        from_node.add_edge(new_node)
+      else
+        next
+      end
     end
   end
 
-  def is_there_a_match?(value, node = root)
-    return false if node.nil?
-    return true if node.data == value
-
-    is_there_a_match?(node.one)
-    is_there_a_match?(node.two)
-    is_there_a_match?(node.three)
-    is_there_a_match?(node.four)
-    is_there_a_match?(node.five)
-    is_there_a_match?(node.six)
+  def valid_move?(_move)
+    true
   end
 
-  def print_moves
-    'ITS TRUE'
+  def correct_move?(to, from)
+    # TODO: Run knights move if false, find parents if true
+    correct = depth_search_for_move?(@graph[0], to)
+    if correct == true
+      puts 'parents'
+      print_parents
+    else
+      puts 'knight'
+      knights_move(to, from)
+    end
+  end
+
+  def depth_search_for_move?(node, correct, moves = 0)
+    # TODO: Search a tree for a correct move, if existing
+    return false if node.nil?
+    return true if node.data == correct
+    return false if node.neighbors.empty?
+
+    puts 'search'
+    node.neighbors.each do |neighbor|
+      puts 'depth'
+      depth_search_for_move?(neighbor, correct, moves += 1)
+    end
+  end
+
+  def print_parents
+    # TODO: If correct, retrieve all parents of the correct position
+    p 'True'
   end
 end
