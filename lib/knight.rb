@@ -22,8 +22,8 @@ class Knight
 
     @graph.each do |node|
       move_piece(node) unless @history.include?(node)
-      node.neighbors.each { |node| move_piece(node) } if @history.include?(node)
       @history << node
+      # node.neighbors.each { |node| @graph << node } unless node.neighbors.empty?
     end
 
     correct_move(to, from)
@@ -46,7 +46,7 @@ class Knight
 
   # Run knights move if false, find parents if true
   def correct_move(to, from)
-    last_move = tree_search(@graph[0], to)
+    last_move = graph_search(@graph[0], to)
 
     if last_move == false
       knights_move(to, from)
@@ -55,22 +55,16 @@ class Knight
     end
   end
 
-  # TODO: Search a tree for a correct move, if existing
-  def tree_search(node, move, queue = [])
-    return node if node.data == move
+  # Search a tree for a correct move, if existing
+  def graph_search(node, move, queue = [])
+    return false if node.nil?
+    return node if node.data.flatten == move
+    return if queue.length == 1
 
-    until node.nil?
-      queue << node.neighbors
-      tree_search(queue.shift, move, queue)
-    end
+    node.neighbors.each { |neighbor| queue << neighbor } unless node.neighbors.empty?
+    graph_search(queue.shift, move, queue)
   end
 
   # TODO: If correct, retrieve all parents of the correct position
-  def print_parents(nodes)
-    nodes.each { |node| puts "node data: #{node.data}" }
-    moves = 0
-    nodes.each { |_node| moves += 1 }
-
-    "it took #{moves} moves."
-  end
+  def print_parents(node); end
 end
