@@ -22,9 +22,14 @@ class Knight
 
     @graph.each do |node|
       move_piece(node) unless @history.include?(node)
-      @history << node
-      # BUG: Infinite loop
-      # node.neighbors.each { |node| @graph << node } unless node.neighbors.empty?
+
+      next if @history.include?(node)
+
+      node.neighbors.each do |node|
+        @graph << node
+        @graph = @graph.flatten
+      end
+      @history << node # Node will not run on recursion
     end
 
     correct_move(to, from)
@@ -69,7 +74,7 @@ class Knight
   def print_parents(node, moveset = [])
     return moveset if node.parent.nil?
 
-    moveset << node.parent.data
+    moveset << node.data
 
     print_parents(node.parent, moveset)
   end
