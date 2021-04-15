@@ -56,6 +56,7 @@ class Knight
   end
 
   # Search a tree for a correct move, if existing
+  # BUG: Returns all eight moves
   def last_move_found(node, move, queue = [])
     return false if node.nil?
     return false if node.neighbors.empty?
