@@ -23,6 +23,7 @@ class Knight
     @graph.each do |node|
       move_piece(node) unless @history.include?(node)
       @history << node
+      # BUG: Infinite loop
       # node.neighbors.each { |node| @graph << node } unless node.neighbors.empty?
     end
 
@@ -59,12 +60,17 @@ class Knight
   def graph_search(node, move, queue = [])
     return false if node.nil?
     return node if node.data.flatten == move
-    return if queue.length == 1
 
     node.neighbors.each { |neighbor| queue << neighbor } unless node.neighbors.empty?
     graph_search(queue.shift, move, queue)
   end
 
-  # TODO: If correct, retrieve all parents of the correct position
-  def print_parents(node); end
+  # If correct, retrieve all parents of the correct position
+  def print_parents(node, moveset = [])
+    return moveset if node.parent.nil?
+
+    moveset << node.parent.data
+
+    print_parents(node.parent, moveset)
+  end
 end
