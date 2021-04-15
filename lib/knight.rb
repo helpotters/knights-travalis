@@ -72,7 +72,7 @@ class Knight
 
   # If correct, retrieve all parents of the correct position
   def print_parents(node, moveset = [])
-    return moveset if node.parent.nil?
+    return "#{moveset} => #{node.data}" if node.parent.nil?
 
     moveset << node.data
 
