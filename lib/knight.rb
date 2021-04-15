@@ -1,4 +1,5 @@
 # lib/knight.rb
+
 require_relative('node')
 require_relative('board')
 require 'matrix'
@@ -67,7 +68,10 @@ class Knight
   end
 
   # TODO: If correct, retrieve all parents of the correct position
-  def print_parents(_node)
-    node.each { |help| puts help.parent.data }
+  def print_parents(nodes)
+    moves = 0
+    nodes.each { |_node| moves += 1 }
+
+    "it took #{moves} moves."
   end
 end
