@@ -36,6 +36,17 @@ class Knight
 
   private
 
+  # Run knights move if false, find parents if true
+  def find_parents_or_repeat(to, from)
+    last_move = graph_search(@graph[0], to)
+
+    if last_move == false
+      knights_move(to, from)
+    else
+      print_parents(last_move)
+    end
+  end
+
   # Build a tree of possible moves
   def move_piece(from_node)
     MOVES.each do |move|
@@ -46,17 +57,6 @@ class Knight
       new_node = GraphNode.new(new_move.to_a)
       from_node.add_edge(new_node)
       new_node.add_parent(from_node) # Data necessary to find path of the moveset
-    end
-  end
-
-  # Run knights move if false, find parents if true
-  def find_parents_or_repeat(to, from)
-    last_move = graph_search(@graph[0], to)
-
-    if last_move == false
-      knights_move(to, from)
-    else
-      print_parents(last_move)
     end
   end
 
